@@ -1,4 +1,4 @@
-import execa from "execa";
+import { spawn } from "child_process";
 import * as fs from "fs";
 import ora from "ora";
 import * as path from "path";
@@ -38,26 +38,46 @@ export class AngularGenerator extends BaseGenerator {
     await this.finalizeProject();
   }
 
+  private runCommand(command: string, args: string[], cwd?: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const fullCommand = [command, ...args].join(" ");
+      const proc = spawn(fullCommand, [], {
+        cwd,
+        stdio: "pipe",
+        shell: true,
+      });
+
+      let stderr = "";
+      proc.stderr?.on("data", (data) => {
+        stderr += data.toString();
+      });
+
+      proc.on("close", (code) => {
+        if (code === 0) {
+          resolve();
+        } else {
+          reject(new Error(stderr || `Command failed with code ${code}`));
+        }
+      });
+
+      proc.on("error", reject);
+    });
+  }
+
   private async createAngularProject(): Promise<void> {
     const spinner = ora("Running ng new...").start();
 
     try {
-      await execa(
-        "npx",
-        [
-          "@angular/cli@20",
-          "new",
-          this.options.projectName,
-          "--style=scss",
-          "--routing=false",
-          "--skip-git",
-          "--skip-install",
-          "--standalone",
-        ],
-        {
-          stdio: "pipe",
-        }
-      );
+      await this.runCommand("npx", [
+        "@angular/cli@20",
+        "new",
+        this.options.projectName,
+        "--style=scss",
+        "--routing=false",
+        "--skip-git",
+        "--skip-install",
+        "--standalone",
+      ]);
 
       spinner.succeed("Angular project created");
     } catch (error) {
@@ -70,12 +90,9 @@ export class AngularGenerator extends BaseGenerator {
     const spinner = ora("Installing npm packages...").start();
 
     try {
-      await execa("npm", ["install"], {
-        cwd: this.projectPath,
-        stdio: "pipe",
-      });
+      await this.runCommand("npm", ["install"], this.projectPath);
 
-      await execa(
+      await this.runCommand(
         "npm",
         [
           "install",
@@ -83,10 +100,7 @@ export class AngularGenerator extends BaseGenerator {
           "@luigi-project/client-support-angular@20",
           "@ui5/webcomponents-ngx",
         ],
-        {
-          cwd: this.projectPath,
-          stdio: "pipe",
-        }
+        this.projectPath
       );
 
       spinner.succeed("Dependencies installed");

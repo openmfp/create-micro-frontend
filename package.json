@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "tsc && npm run copy-templates",
-    "copy-templates": "cp -r src/generators/angular/files dist/generators/angular/",
+    "copy-templates": "node scripts/copy-templates.js",
     "dev": "tsc --watch",
     "start": "node dist/index.js",
     "prepublishOnly": "npm run build"
@@ -26,9 +26,8 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "commander": "^12.1.0",
-    "execa": "^5.1.1",
     "inquirer": "^8.2.6",
-    "ora": "^5.4.1"
+    "ora": "^4.1.1"
   },
   "devDependencies": {
     "@types/inquirer": "^8.2.10",
