@@ -1,0 +1,46 @@
+@if (product$(); as product) {
+  <div class="object-page">
+    <header class="object-page-header">
+      <div class="avatar">{{ product.name.charAt(0) }}</div>
+      <div class="header-content">
+        <h1>{{ product.name }}</h1>
+        <p>{{ product.subtitle }}</p>
+        <span class="status-tag">{{ product.status }}</span>
+      </div>
+    </header>
+
+    <section class="object-page-section">
+      <h2>General Information</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Description</label>
+          <p>{{ product.description }}</p>
+        </div>
+        <div class="info-item">
+          <label>Supplier</label>
+          <p>{{ product.supplier }}</p>
+        </div>
+        <div class="info-item">
+          <label>Category</label>
+          <p>{{ product.category }}</p>
+        </div>
+        <div class="info-item">
+          <label>Price</label>
+          <p>{{ product.price }} {{ product.currency }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="object-page-section">
+      <h2>Technical Specifications</h2>
+      <div class="specs-list">
+        @for (spec of product.specifications; track spec.label) {
+          <div class="spec-item">
+            <label>{{ spec.label }}</label>
+            <span>{{ spec.value }}</span>
+          </div>
+        }
+      </div>
+    </section>
+  </div>
+}

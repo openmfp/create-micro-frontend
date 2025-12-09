@@ -13,7 +13,7 @@ export class AngularGenerator extends BaseGenerator {
   constructor(options: ProjectOptions) {
     super(options);
     this.projectPath = path.join(process.cwd(), options.projectName);
-    this.templatesPath = path.join(__dirname, "files");
+    this.templatesPath = path.join(__dirname, "templates");
   }
 
   async generate(): Promise<void> {
@@ -124,6 +124,11 @@ export class AngularGenerator extends BaseGenerator {
         path.join(this.templatesPath, "src"),
         path.join(this.projectPath, "src"),
         skipDirs
+      );
+
+      this.copyFile(
+        path.join(this.templatesPath, "public", "content-configuration.json"),
+        path.join(this.projectPath, "public")
       );
 
       const appVariantFolder = this.options.includeExample

@@ -27,10 +27,16 @@ const distGeneratorsDir = path.join(__dirname, "..", "dist", "generators");
 const generators = fs.readdirSync(generatorsDir);
 
 for (const generator of generators) {
-  const filesDir = path.join(generatorsDir, generator, "files");
+  const filesDir = path.join(generatorsDir, generator, "templates");
 
   if (fs.existsSync(filesDir) && fs.statSync(filesDir).isDirectory()) {
-    const destDir = path.join(distGeneratorsDir, generator, "files");
+    if (fs.existsSync(path.join(distGeneratorsDir, generator))) {
+      fs.rmSync(path.join(distGeneratorsDir, generator, "templates"), {
+        recursive: true,
+      });
+    }
+
+    const destDir = path.join(distGeneratorsDir, generator, "templates");
     copyDirectory(filesDir, destDir);
     console.log(`Copied templates for: ${generator}`);
   }
