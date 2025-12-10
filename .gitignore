@@ -27,13 +27,3 @@ __debug_bin
 **/.env
 **/.secrets
 .secret/
-
-iam-ui.tar.gz
-iam-wc.tar.gz
-
-# yalc
-/.yalc/
-/yalc.lock
-
-
-TEST-frontend.xml
