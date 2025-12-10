@@ -30,7 +30,7 @@ for (const generator of generators) {
   const filesDir = path.join(generatorsDir, generator, "templates");
 
   if (fs.existsSync(filesDir) && fs.statSync(filesDir).isDirectory()) {
-    if (fs.existsSync(path.join(distGeneratorsDir, generator))) {
+    if (fs.existsSync(path.join(distGeneratorsDir, generator, "templates"))) {
       fs.rmSync(path.join(distGeneratorsDir, generator, "templates"), {
         recursive: true,
       });
