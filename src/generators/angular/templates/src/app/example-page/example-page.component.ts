@@ -34,7 +34,7 @@ import '@ui5/webcomponents-icons/dist/shipping-status.js';
 import '@ui5/webcomponents-icons/dist/sort.js';
 
 @Component({
-  selector: 'app-object-page',
+  selector: 'app-example-page',
   standalone: true,
   imports: [
     DynamicPageComponent,
@@ -59,10 +59,10 @@ import '@ui5/webcomponents-icons/dist/sort.js';
     TableCellComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  templateUrl: './object-page.component.html',
-  styleUrl: './object-page.component.scss',
+  templateUrl: './example-page.component.html',
+  styleUrl: './example-page.component.scss',
 })
-export class ObjectPageComponent {
+export class ExamplePageComponent {
   private luigiContextService = inject(LuigiContextService);
 
   public luigiContext = toSignal(this.luigiContextService.contextObservable(), {

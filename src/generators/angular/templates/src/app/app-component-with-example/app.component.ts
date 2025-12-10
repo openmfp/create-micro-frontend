@@ -1,12 +1,11 @@
 import { Component } from "@angular/core";
-import { ObjectPageComponent } from "./object-page/object-page.component";
+import { ExamplePageComponent } from "./example-page/example-page.component";
 
 @Component({
   selector: "app-root",
   standalone: true,
-  imports: [ObjectPageComponent],
-  template: `<app-object-page></app-object-page>`,
+  imports: [ExamplePageComponent],
+  template: `<app-example-page></app-example-page>`,
   styles: ``,
 })
 export class AppComponent {}
-

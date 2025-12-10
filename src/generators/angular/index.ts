@@ -115,7 +115,7 @@ export class AngularGenerator extends BaseGenerator {
 
     try {
       const skipDirs = [
-        "object-page",
+        "example-page",
         "app-component-with-example",
         "app-component-no-example",
       ];
@@ -153,8 +153,8 @@ export class AngularGenerator extends BaseGenerator {
 
     try {
       this.copyDirectory(
-        path.join(this.templatesPath, "src", "app", "object-page"),
-        path.join(this.projectPath, "src", "app", "object-page"),
+        path.join(this.templatesPath, "src", "app", "example-page"),
+        path.join(this.projectPath, "src", "app", "example-page"),
         []
       );
 
