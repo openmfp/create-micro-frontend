@@ -1,6 +1,6 @@
 # @openmfp/create-micro-frontend
 
-CLI for quickly scaffolding a micro frontend ready for OpenMFP Portal integration (Luigi + UI5 Web Components). Angular is supported today; additional frameworks are planned.
+CLI for quickly scaffolding a micro frontend ready for OpenMFP Portal integration (Luigi + UI5 Web Components). 
 
 ## Overview
 
