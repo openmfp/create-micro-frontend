@@ -20,7 +20,6 @@ CLI for quickly scaffolding a micro frontend ready for OpenMFP Portal integratio
 
 - Node.js ≥ 20.0.0
 - npm ≥ 10 (11 recommended)
-- Access to `npx` to run Angular CLI
 
 ## Installation & Usage
 
