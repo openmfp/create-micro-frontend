@@ -1,0 +1,26 @@
+name: pipe
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+permissions:
+  # Write access is used for tag creation and version commits
+  contents: write
+  # Needed for provenance creation when publishing to npmjs
+  id-token: write
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pipe:
+    uses: openmfp/gha/.github/workflows/pipeline-node-module.yml@main
+    secrets: inherit
+    with:
+      publish: false

@@ -1,0 +1,29 @@
+dist/
+dist-lib/
+dist-wc/
+dist-ui/
+coverage/
+main
+
+node_modules
+__debug_bin
+/bin
+.vscode/
+.eslintcache
+.nx 
+
+# IDE - IntelliJ
+.idea/
+*.iml
+.DS_Store
+
+
+*.pnp.*
+
+# misc
+**/.angular/*
+
+# local env config
+**/.env
+**/.secrets
+.secret/
