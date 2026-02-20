@@ -25,6 +25,18 @@ This project includes comprehensive tests for the CLI tool and generators:
 npm test
 ```
 
+Run only unit tests:
+
+```bash
+npm run test:unit
+```
+
+Run only integration tests:
+
+```bash
+npm run test:integration
+```
+
 ## Issues
 We use GitHub issues to track bugs. Please ensure your description is
 clear and includes sufficient instructions to reproduce the issue.

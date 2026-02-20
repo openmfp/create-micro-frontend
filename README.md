@@ -51,6 +51,12 @@ npx create-micro-frontend my-mfe
   ```
 - Angular CLI missing / npx timeout: ensure `npx` and network access; run `npm cache verify` if needed and retry.
 
+## Testing
+
+- Run all tests: `npm test`
+- Run unit tests only: `npm run test:unit`
+- Run integration tests only: `npm run test:integration`
+
 ## Repository
 
 - GitHub: https://github.com/openmfp/create-micro-frontend
