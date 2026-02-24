@@ -1,5 +1,6 @@
 import path from "path";
 import fs from "fs";
+import os from "os";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AngularGenerator } from ".";
 import { ProjectOptions } from "../../prompts";
@@ -52,6 +53,7 @@ describe("AngularGenerator", () => {
     const instance = generator as unknown as Record<string, any>;
 
     instance.createAngularProject = vi.fn(async () => calls.push("create"));
+    instance.updateAngularConfigurations = vi.fn(async () => calls.push("updateAngularConfigurations"));
     instance.installDependencies = vi.fn(async () => calls.push("install"));
     instance.copyTemplateFiles = vi.fn(async () => calls.push("copyTemplates"));
     instance.copyExampleFiles = vi.fn(async () => calls.push("copyExample"));
@@ -59,7 +61,7 @@ describe("AngularGenerator", () => {
 
     await generator.generate();
 
-    expect(calls).toEqual(["create", "install", "copyTemplates", "finalize"]);
+    expect(calls).toEqual(["create", "updateAngularConfigurations", "install", "copyTemplates", "finalize"]);
     expect(instance.copyExampleFiles).not.toHaveBeenCalled();
   });
 
@@ -72,6 +74,7 @@ describe("AngularGenerator", () => {
     const instance = generatorWithExample as unknown as Record<string, any>;
 
     instance.createAngularProject = vi.fn(async () => calls.push("create"));
+    instance.updateAngularConfigurations = vi.fn(async () => calls.push("updateAngularConfigurations"));
     instance.installDependencies = vi.fn(async () => calls.push("install"));
     instance.copyTemplateFiles = vi.fn(async () => calls.push("copyTemplates"));
     instance.copyExampleFiles = vi.fn(async () => calls.push("copyExample"));
@@ -81,11 +84,113 @@ describe("AngularGenerator", () => {
 
     expect(calls).toEqual([
       "create",
+      "updateAngularConfigurations",
       "install",
       "copyTemplates",
       "copyExample",
       "finalize",
     ]);
+  });
+
+  it("updates existing initial production budget limits", async () => {
+    const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "angular-budget-update-"));
+    const angularConfigPath = path.join(tmpRoot, "angular.json");
+    const instance = generator as unknown as {
+      projectPath: string;
+      updateAngularConfigurations: () => Promise<void>;
+    };
+    instance.projectPath = tmpRoot;
+
+    const config = {
+      projects: {
+        [baseOptions.projectName]: {
+          targets: {
+            build: {
+              configurations: {
+                production: {
+                  budgets: [
+                    { type: "initial", maximumWarning: "500kb", maximumError: "1mb" },
+                    { type: "anyComponentStyle", maximumWarning: "5kb", maximumError: "10kb" },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+    fs.writeFileSync(angularConfigPath, JSON.stringify(config, null, 2));
+
+    try {
+      await instance.updateAngularConfigurations();
+      const updatedConfig = JSON.parse(fs.readFileSync(angularConfigPath, "utf-8")) as {
+        projects: Record<string, { targets: { build: { configurations: { production: { budgets: Array<Record<string, string>> } } } } }>;
+      };
+
+      const budgets =
+        updatedConfig.projects[baseOptions.projectName].targets.build.configurations.production.budgets;
+      expect(budgets.find((budget) => budget.type === "initial")).toEqual({
+        type: "initial",
+        maximumWarning: "2mb",
+        maximumError: "5mb",
+      });
+      expect(budgets.find((budget) => budget.type === "anyComponentStyle")).toEqual({
+        type: "anyComponentStyle",
+        maximumWarning: "5kb",
+        maximumError: "10kb",
+      });
+    } finally {
+      fs.rmSync(tmpRoot, { recursive: true, force: true });
+    }
+  });
+
+  it("adds initial production budget limits when missing", async () => {
+    const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "angular-budget-add-"));
+    const angularConfigPath = path.join(tmpRoot, "angular.json");
+    const instance = generator as unknown as {
+      projectPath: string;
+      updateAngularConfigurations: () => Promise<void>;
+    };
+    instance.projectPath = tmpRoot;
+
+    const config = {
+      projects: {
+        [baseOptions.projectName]: {
+          architect: {
+            build: {
+              configurations: {
+                production: {
+                  budgets: [{ type: "anyScript", maximumWarning: "500kb", maximumError: "1mb" }],
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+    fs.writeFileSync(angularConfigPath, JSON.stringify(config, null, 2));
+
+    try {
+      await instance.updateAngularConfigurations();
+      const updatedConfig = JSON.parse(fs.readFileSync(angularConfigPath, "utf-8")) as {
+        projects: Record<string, { architect: { build: { configurations: { production: { budgets: Array<Record<string, string>> } } } } }>;
+      };
+      const budgets =
+        updatedConfig.projects[baseOptions.projectName].architect.build.configurations.production.budgets;
+
+      expect(budgets.find((budget) => budget.type === "anyScript")).toEqual({
+        type: "anyScript",
+        maximumWarning: "500kb",
+        maximumError: "1mb",
+      });
+      expect(budgets.find((budget) => budget.type === "initial")).toEqual({
+        type: "initial",
+        maximumWarning: "2mb",
+        maximumError: "5mb",
+      });
+    } finally {
+      fs.rmSync(tmpRoot, { recursive: true, force: true });
+    }
   });
 
   it("copies the correct template set without example", async () => {
