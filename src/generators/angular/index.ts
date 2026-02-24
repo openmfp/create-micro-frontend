@@ -21,6 +21,8 @@ export class AngularGenerator extends BaseGenerator {
   private projectPath: string;
   private templatesPath: string;
   private readonly manifest: GeneratorManifest;
+  private readonly budgetMaximumWarning = "2mb";
+  private readonly budgetMaximumError = "5mb";
 
   constructor(options: ProjectOptions, runtimeOptions: AngularGeneratorRuntimeOptions = {}) {
     super(options);
@@ -31,11 +33,14 @@ export class AngularGenerator extends BaseGenerator {
   }
 
   async generate(): Promise<void> {
-    const totalSteps = this.options.includeExample ? 5 : 4;
+    const totalSteps = this.options.includeExample ? 6 : 5;
     let currentStep = 1;
 
     logger.step(currentStep++, totalSteps, "Creating Angular project...");
     await this.createAngularProject();
+
+    logger.step(currentStep++, totalSteps, "Updating Angular build budgets...");
+    await this.updateAngularConfigurations();
 
     logger.step(currentStep++, totalSteps, "Installing dependencies...");
     await this.installDependencies();
@@ -97,6 +102,80 @@ export class AngularGenerator extends BaseGenerator {
       spinner.fail("Failed to create Angular project");
       throw error;
     }
+  }
+
+  private async updateAngularConfigurations(): Promise<void> {
+    const spinner = ora("Updating Angular configurations...").start();
+    const angularConfigPath = path.join(this.projectPath, "angular.json");
+
+    try {
+      const rawConfig = fs.readFileSync(angularConfigPath, "utf-8");
+      const parsedConfig = JSON.parse(rawConfig) as { projects?: Record<string, unknown> };
+
+      const projects = parsedConfig.projects;
+      if (!this.isObjectRecord(projects)) {
+        throw new Error("Invalid Angular workspace configuration: missing projects");
+      }
+
+      const namedProject = projects[this.options.projectName];
+      const fallbackProject = Object.values(projects).find((project) => this.isObjectRecord(project));
+      const projectConfig = this.isObjectRecord(namedProject) ? namedProject : fallbackProject;
+      if (!projectConfig) {
+        throw new Error("Invalid Angular workspace configuration: missing project entry");
+      }
+
+      const targetsConfig = this.isObjectRecord(projectConfig.targets)
+        ? projectConfig.targets
+        : this.isObjectRecord(projectConfig.architect)
+          ? projectConfig.architect
+          : undefined;
+      if (!targetsConfig) {
+        throw new Error("Invalid Angular workspace configuration: missing targets/architect");
+      }
+
+      const buildTarget = targetsConfig.build;
+      if (!this.isObjectRecord(buildTarget)) {
+        throw new Error("Invalid Angular workspace configuration: missing build target");
+      }
+
+      const configurations = buildTarget.configurations;
+      if (!this.isObjectRecord(configurations)) {
+        throw new Error("Invalid Angular workspace configuration: missing build configurations");
+      }
+
+      const productionConfig = configurations.production;
+      if (!this.isObjectRecord(productionConfig)) {
+        throw new Error("Invalid Angular workspace configuration: missing production configuration");
+      }
+
+      const budgets = Array.isArray(productionConfig.budgets) ? [...productionConfig.budgets] : [];
+      const initialBudget = budgets.find(
+        (budget): budget is Record<string, unknown> =>
+          this.isObjectRecord(budget) && budget.type === "initial"
+      );
+
+      if (initialBudget) {
+        initialBudget.maximumWarning = this.budgetMaximumWarning;
+        initialBudget.maximumError = this.budgetMaximumError;
+      } else {
+        budgets.push({
+          type: "initial",
+          maximumWarning: this.budgetMaximumWarning,
+          maximumError: this.budgetMaximumError,
+        });
+      }
+
+      productionConfig.budgets = budgets;
+      fs.writeFileSync(angularConfigPath, `${JSON.stringify(parsedConfig, null, 2)}\n`);
+      spinner.succeed("Angular build budgets updated");
+    } catch (error) {
+      spinner.fail("Failed to update Angular build budgets");
+      throw error;
+    }
+  }
+
+  private isObjectRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
   }
 
   private async installDependencies(): Promise<void> {
