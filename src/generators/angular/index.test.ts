@@ -1,4 +1,5 @@
 import path from "path";
+import fs from "fs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AngularGenerator } from ".";
 import { ProjectOptions } from "../../prompts";
@@ -7,6 +8,11 @@ const baseOptions: ProjectOptions = {
   projectName: "test-mfe",
   framework: "angular",
   includeExample: false,
+};
+
+const manifestPath = path.join(__dirname, "package.json");
+const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8")) as {
+  dependencies: Record<string, string>;
 };
 
 describe("AngularGenerator", () => {
@@ -35,9 +41,7 @@ describe("AngularGenerator", () => {
       "npm",
       [
         "install",
-        "@luigi-project/client",
-        "@luigi-project/client-support-angular@20",
-        "@ui5/webcomponents-ngx",
+        ...Object.entries(manifest.dependencies).map(([name, version]) => `${name}@${version}`),
       ],
       projectPath
     );

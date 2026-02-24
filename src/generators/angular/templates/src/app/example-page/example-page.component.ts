@@ -1,29 +1,36 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, effect, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import LuigiClient from '@luigi-project/client';
-import { ILuigiContextTypes, LuigiContextService } from '@luigi-project/client-support-angular';
 import {
-  AvatarComponent,
-  DynamicPageComponent,
-  DynamicPageHeaderComponent,
-  DynamicPageTitleComponent,
-  IconComponent,
-  InputComponent,
-  LabelComponent,
-  LinkComponent,
-  TabComponent,
-  TabContainerComponent,
-  TableCellComponent,
-  TableComponent,
-  TableHeaderCellComponent,
-  TableHeaderRowComponent,
-  TableRowComponent,
-  TextComponent,
-  TitleComponent,
-  ToolbarButtonComponent,
-  ToolbarComponent,
-  ToolbarSpacerComponent,
-} from '@ui5/webcomponents-ngx';
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { DynamicPage } from '@fundamental-ngx/ui5-webcomponents-fiori/dynamic-page';
+import { DynamicPageHeader } from '@fundamental-ngx/ui5-webcomponents-fiori/dynamic-page-header';
+import { DynamicPageTitle } from '@fundamental-ngx/ui5-webcomponents-fiori/dynamic-page-title';
+import { Avatar } from '@fundamental-ngx/ui5-webcomponents/avatar';
+import { Icon } from '@fundamental-ngx/ui5-webcomponents/icon';
+import { Input } from '@fundamental-ngx/ui5-webcomponents/input';
+import { Label } from '@fundamental-ngx/ui5-webcomponents/label';
+import { Link } from '@fundamental-ngx/ui5-webcomponents/link';
+import { Tab } from '@fundamental-ngx/ui5-webcomponents/tab';
+import { TabContainer } from '@fundamental-ngx/ui5-webcomponents/tab-container';
+import { Table } from '@fundamental-ngx/ui5-webcomponents/table';
+import { TableCell } from '@fundamental-ngx/ui5-webcomponents/table-cell';
+import { TableHeaderCell } from '@fundamental-ngx/ui5-webcomponents/table-header-cell';
+import { TableHeaderRow } from '@fundamental-ngx/ui5-webcomponents/table-header-row';
+import { TableRow } from '@fundamental-ngx/ui5-webcomponents/table-row';
+import { Text } from '@fundamental-ngx/ui5-webcomponents/text';
+import { Title } from '@fundamental-ngx/ui5-webcomponents/title';
+import { Toolbar } from '@fundamental-ngx/ui5-webcomponents/toolbar';
+import { ToolbarButton } from '@fundamental-ngx/ui5-webcomponents/toolbar-button';
+import { ToolbarSpacer } from '@fundamental-ngx/ui5-webcomponents/toolbar-spacer';
+import LuigiClient from '@luigi-project/client';
+import {
+  ILuigiContextTypes,
+  LuigiContextService,
+} from '@luigi-project/client-support-angular';
 import { delay, Observable, of } from 'rxjs';
 
 import '@ui5/webcomponents-icons/dist/action-settings.js';
@@ -37,26 +44,26 @@ import '@ui5/webcomponents-icons/dist/sort.js';
   selector: 'app-example-page',
   standalone: true,
   imports: [
-    DynamicPageComponent,
-    DynamicPageTitleComponent,
-    DynamicPageHeaderComponent,
-    AvatarComponent,
-    TitleComponent,
-    LabelComponent,
-    TextComponent,
-    LinkComponent,
-    ToolbarComponent,
-    ToolbarButtonComponent,
-    ToolbarSpacerComponent,
-    TabContainerComponent,
-    TabComponent,
-    IconComponent,
-    InputComponent,
-    TableComponent,
-    TableHeaderRowComponent,
-    TableHeaderCellComponent,
-    TableRowComponent,
-    TableCellComponent,
+    DynamicPage,
+    DynamicPageTitle,
+    DynamicPageHeader,
+    Avatar,
+    Title,
+    Label,
+    Text,
+    Link,
+    Toolbar,
+    ToolbarButton,
+    ToolbarSpacer,
+    TabContainer,
+    Tab,
+    Icon,
+    Input,
+    Table,
+    TableHeaderRow,
+    TableHeaderCell,
+    TableRow,
+    TableCell,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './example-page.component.html',
@@ -82,7 +89,8 @@ export class ExamplePageComponent {
     LuigiClient.addInitListener((initialContext: any) => {
       LuigiClient.uxManager().showLoadingIndicator();
       LuigiClient.uxManager().showAlert({
-        text: 'Microfrontend initialized on url: ' + initialContext.portalBaseUrl,
+        text:
+          'Microfrontend initialized on url: ' + initialContext.portalBaseUrl,
         type: 'success',
         closeAfter: 3000,
       });

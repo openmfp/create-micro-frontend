@@ -27,18 +27,29 @@ const distGeneratorsDir = path.join(__dirname, "..", "dist", "generators");
 const generators = fs.readdirSync(generatorsDir);
 
 for (const generator of generators) {
-  const filesDir = path.join(generatorsDir, generator, "templates");
+  const generatorSourceDir = path.join(generatorsDir, generator);
+  const filesDir = path.join(generatorSourceDir, "templates");
+  const generatorDistDir = path.join(distGeneratorsDir, generator);
+  const manifestPath = path.join(generatorSourceDir, "package.json");
 
   if (fs.existsSync(filesDir) && fs.statSync(filesDir).isDirectory()) {
-    if (fs.existsSync(path.join(distGeneratorsDir, generator, "templates"))) {
-      fs.rmSync(path.join(distGeneratorsDir, generator, "templates"), {
+    if (fs.existsSync(path.join(generatorDistDir, "templates"))) {
+      fs.rmSync(path.join(generatorDistDir, "templates"), {
         recursive: true,
       });
     }
 
-    const destDir = path.join(distGeneratorsDir, generator, "templates");
+    const destDir = path.join(generatorDistDir, "templates");
     copyDirectory(filesDir, destDir);
     console.log(`Copied templates for: ${generator}`);
+  }
+
+  if (fs.existsSync(manifestPath)) {
+    if (!fs.existsSync(generatorDistDir)) {
+      fs.mkdirSync(generatorDistDir, { recursive: true });
+    }
+    fs.copyFileSync(manifestPath, path.join(generatorDistDir, "package.json"));
+    console.log(`Copied manifest for: ${generator}`);
   }
 }
 

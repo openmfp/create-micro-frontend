@@ -6,14 +6,28 @@ import { ProjectOptions } from "../../prompts";
 import { logger } from "../../utils/logger";
 import { BaseGenerator } from "../base";
 
+type DependencyMap = Record<string, string>;
+
+interface GeneratorManifest {
+  dependencies: DependencyMap;
+  devDependencies: DependencyMap;
+}
+
+interface AngularGeneratorRuntimeOptions {
+  cwd?: string;
+}
+
 export class AngularGenerator extends BaseGenerator {
   private projectPath: string;
   private templatesPath: string;
+  private readonly manifest: GeneratorManifest;
 
-  constructor(options: ProjectOptions) {
+  constructor(options: ProjectOptions, runtimeOptions: AngularGeneratorRuntimeOptions = {}) {
     super(options);
-    this.projectPath = path.join(process.cwd(), options.projectName);
+    const basePath = runtimeOptions.cwd ?? process.cwd();
+    this.projectPath = path.join(basePath, options.projectName);
     this.templatesPath = path.join(__dirname, "templates");
+    this.manifest = this.readGeneratorManifest();
   }
 
   async generate(): Promise<void> {
@@ -40,11 +54,9 @@ export class AngularGenerator extends BaseGenerator {
 
   private runCommand(command: string, args: string[], cwd?: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      const fullCommand = [command, ...args].join(" ");
-      const proc = spawn(fullCommand, [], {
+      const proc = spawn(command, args, {
         cwd,
         stdio: "pipe",
-        shell: true,
       });
 
       let stderr = "";
@@ -68,8 +80,9 @@ export class AngularGenerator extends BaseGenerator {
     const spinner = ora("Running ng new...").start();
 
     try {
+      const angularCliPackage = this.getAngularCliPackage();
       await this.runCommand("npx", [
-        "@angular/cli@20",
+        angularCliPackage,
         "new",
         this.options.projectName,
         "--style=scss",
@@ -77,7 +90,7 @@ export class AngularGenerator extends BaseGenerator {
         "--skip-git",
         "--skip-install",
         "--standalone",
-      ]);
+      ], path.dirname(this.projectPath));
 
       spinner.succeed("Angular project created");
     } catch (error) {
@@ -90,18 +103,10 @@ export class AngularGenerator extends BaseGenerator {
     const spinner = ora("Installing npm packages...").start();
 
     try {
+      const generatorDependencies = this.getInstallableDependencies();
       await this.runCommand("npm", ["install"], this.projectPath);
 
-      await this.runCommand(
-        "npm",
-        [
-          "install",
-          "@luigi-project/client",
-          "@luigi-project/client-support-angular@20",
-          "@ui5/webcomponents-ngx",
-        ],
-        this.projectPath
-      );
+      await this.runCommand("npm", ["install", ...generatorDependencies], this.projectPath);
 
       spinner.succeed("Dependencies installed");
     } catch (error) {
@@ -197,6 +202,41 @@ export class AngularGenerator extends BaseGenerator {
 
   private processTemplateVariables(content: string): string {
     return content.replace(/__PROJECT_NAME__/g, this.options.projectName);
+  }
+
+  private readGeneratorManifest(): GeneratorManifest {
+    const manifestPath = path.join(__dirname, "package.json");
+    const rawManifest = fs.readFileSync(manifestPath, "utf-8");
+    const parsedManifest = JSON.parse(rawManifest) as Partial<GeneratorManifest>;
+
+    if (!parsedManifest.dependencies || !parsedManifest.devDependencies) {
+      throw new Error(`Invalid generator manifest at ${manifestPath}`);
+    }
+
+    return {
+      dependencies: parsedManifest.dependencies,
+      devDependencies: parsedManifest.devDependencies,
+    };
+  }
+
+  private getAngularCliPackage(): string {
+    const cliVersion = this.manifest.devDependencies["@angular/cli"];
+
+    if (!cliVersion) {
+      throw new Error("Missing @angular/cli version in generator manifest");
+    }
+
+    return `@angular/cli@${cliVersion}`;
+  }
+
+  private getInstallableDependencies(): string[] {
+    const entries = Object.entries(this.manifest.dependencies);
+
+    if (entries.length === 0) {
+      throw new Error("No dependencies declared in generator manifest");
+    }
+
+    return entries.map(([name, version]) => `${name}@${version}`);
   }
 
   private async finalizeProject(): Promise<void> {
