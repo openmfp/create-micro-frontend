@@ -1,0 +1,9 @@
+version = 1
+SPDX-PackageName = "create-micro-frontend"
+SPDX-PackageDownloadLocation = "https://github.com/openmfp/create-micro-frontend"
+
+[[annotations]]
+path = "**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 openmfp contributors"
+SPDX-License-Identifier = "Apache-2.0"
