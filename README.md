@@ -49,6 +49,7 @@ npx create-micro-frontend my-mfe
   cd my-mf
   npm install
   ```
+  
 - Angular CLI missing / npx timeout: ensure `npx` and network access; run `npm cache verify` if needed and retry.
 
 ## Testing
