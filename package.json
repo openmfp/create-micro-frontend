@@ -1,5 +1,5 @@
 {
-  "name": "create-micro-frontend",
+  "name": "@openmfp/create-micro-frontend",
   "version": "1.0.0",
   "description": "CLI tool to scaffold micro frontend projects for portal integration",
   "main": "dist/index.js",
