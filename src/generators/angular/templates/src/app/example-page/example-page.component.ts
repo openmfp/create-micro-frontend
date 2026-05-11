@@ -213,7 +213,7 @@ export class ExamplePageComponent {
           mailing: 'PO Box 32114',
         },
         mailingAddress: {
-          work: 'DeniseSmith@sap.com',
+          work: 'denise.smith@example.com',
         },
       },
     }).pipe(delay(1500));

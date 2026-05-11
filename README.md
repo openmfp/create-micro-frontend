@@ -62,18 +62,12 @@ npx create-micro-frontend my-mfe
 - GitHub: https://github.com/openmfp/create-micro-frontend
 - npm: https://www.npmjs.com/package/@openmfp/create-micro-frontend
 
-## Contributing
-
-Please refer to the [CONTRIBUTING](CONTRIBUTING.md) file in this repository for instructions on how to contribute to openMFP.
-
-## Code of Conduct
-
-Please refer to the [CODE_OF_CONDUCT.md](https://github.com/openmfp/create-portal?tab=coc-ov-file) of NeoNephos for information on the expected Code of Conduct for contributing to openMFP.
-
-## Licensing
-
-Please see our [LICENSE](https://github.com/openmfp/create-portal?tab=Apache-2.0-1-ov-file) for copyright and license information. Detailed information including third-party components and their licensing/copyright information is available [via the REUSE tool](https://api.reuse.software/info/github.com/openmfp/create-portal).
-
 ## Support
 
 For questions and support, please open an issue on the GitHub repository.
+
+## About this project
+
+create-micro-frontend is part of the open-source initiative under the [NeoNephos](https://neonephos.eu/) project of the [Linux Foundation Europe](https://linuxfoundation.eu/).
+
+<p align="center"><img alt="Bundesministerium für Wirtschaft und Energie (BMWE)-EU funding logo" src="https://apeirora.eu/assets/img/BMWK-EU.png" width="400"/></p>
