@@ -2,8 +2,8 @@ import path from "path";
 import fs from "fs";
 import os from "os";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { AngularGenerator } from ".";
-import { ProjectOptions } from "../../prompts";
+import { AngularGenerator } from "./index.js";
+import { ProjectOptions } from "../../prompts.js";
 
 const baseOptions: ProjectOptions = {
   projectName: "test-mfe",

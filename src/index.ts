@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 import { program } from "commander";
-import { parseCliArgs } from "./cli";
-import { AngularGenerator } from "./generators/angular";
-import { runPrompts } from "./prompts";
-import { logger } from "./utils/logger";
+import { parseCliArgs } from "./cli.js";
+import { AngularGenerator } from "./generators/angular/index.js";
+import { runPrompts } from "./prompts.js";
+import { logger } from "./utils/logger.js";
 
 async function main() {
   const cliOptions = parseCliArgs(program);

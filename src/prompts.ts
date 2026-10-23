@@ -1,5 +1,5 @@
 import inquirer, { DistinctQuestion } from 'inquirer';
-import { CliOptions } from './cli';
+import { CliOptions } from './cli.js';
 
 export interface ProjectOptions {
   projectName: string;

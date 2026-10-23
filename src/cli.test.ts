@@ -1,6 +1,6 @@
 import { Command } from "commander";
 import { afterEach, describe, expect, it } from "vitest";
-import { parseCliArgs } from "./cli";
+import { parseCliArgs } from "./cli.js";
 
 const originalArgv = [...process.argv];
 

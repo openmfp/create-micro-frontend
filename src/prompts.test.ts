@@ -1,6 +1,6 @@
 import inquirer from "inquirer";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { runPrompts } from "./prompts";
+import { runPrompts } from "./prompts.js";
 
 const promptMock = vi.hoisted(() => vi.fn());
 const registerPromptMock = vi.hoisted(() => vi.fn());
