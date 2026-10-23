@@ -2,9 +2,10 @@ import { spawn } from "child_process";
 import * as fs from "fs";
 import ora from "ora";
 import * as path from "path";
-import { ProjectOptions } from "../../prompts";
-import { logger } from "../../utils/logger";
-import { BaseGenerator } from "../base";
+import { fileURLToPath } from "url";
+import { ProjectOptions } from "../../prompts.js";
+import { logger } from "../../utils/logger.js";
+import { BaseGenerator } from "../base.js";
 
 type DependencyMap = Record<string, string>;
 
@@ -23,12 +24,13 @@ export class AngularGenerator extends BaseGenerator {
   private readonly manifest: GeneratorManifest;
   private readonly budgetMaximumWarning = "2mb";
   private readonly budgetMaximumError = "5mb";
+  private readonly generatorDir = path.dirname(fileURLToPath(import.meta.url));
 
   constructor(options: ProjectOptions, runtimeOptions: AngularGeneratorRuntimeOptions = {}) {
     super(options);
     const basePath = runtimeOptions.cwd ?? process.cwd();
     this.projectPath = path.join(basePath, options.projectName);
-    this.templatesPath = path.join(__dirname, "templates");
+    this.templatesPath = path.join(this.generatorDir, "templates");
     this.manifest = this.readGeneratorManifest();
   }
 
@@ -284,7 +286,7 @@ export class AngularGenerator extends BaseGenerator {
   }
 
   private readGeneratorManifest(): GeneratorManifest {
-    const manifestPath = path.join(__dirname, "package.json");
+    const manifestPath = path.join(this.generatorDir, "package.json");
     const rawManifest = fs.readFileSync(manifestPath, "utf-8");
     const parsedManifest = JSON.parse(rawManifest) as Partial<GeneratorManifest>;
 

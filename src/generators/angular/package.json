@@ -1,6 +1,7 @@
 {
   "name": "@openmfp/angular-generator",
   "private": true,
+  "type": "module",
   "devDependencies": {
     "@angular/cli": "21.1.4"
   },

@@ -3,8 +3,8 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { afterAll, describe, expect, it } from "vitest";
-import { AngularGenerator } from "../generators/angular";
-import { ProjectOptions } from "../prompts";
+import { AngularGenerator } from "../generators/angular/index.js";
+import { ProjectOptions } from "../prompts.js";
 
 type CommandResult = {
   exitCode: number;

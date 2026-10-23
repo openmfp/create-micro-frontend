@@ -1,4 +1,4 @@
-import { ProjectOptions } from '../prompts';
+import { ProjectOptions } from '../prompts.js';
 
 export interface Generator {
   generate(): Promise<void>;
